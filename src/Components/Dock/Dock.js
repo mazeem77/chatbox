@@ -1,7 +1,7 @@
 import "./Dock.css"
 import {Helmet} from "react-helmet";
 import DashBoard from "./DashBoard/DashBoard";
-import Chats from "./Chats/Chats"
+import Chats from "./Chats/Chats.js"
 import Notifications from "./Notifications/Notification";
 import Settings from "./Settings/Settings";
 import { useState } from 'react'
