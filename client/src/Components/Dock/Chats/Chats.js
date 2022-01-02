@@ -1,12 +1,12 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../Chats/Chats.css';
 import Dock from '../Dock.js';
 
 
 function Chats({socket}){
 
-    const {newMessage, setNewMessage} = useState("");
+    const [newMessage, setNewMessage] = useState("");
 
     const sendMessage = async () => {
         if (newMessage !== "") {
@@ -23,6 +23,13 @@ function Chats({socket}){
         //   setNewMessage("");
         }
       };
+
+      useEffect(() => {
+        socket.on("receive_message", (data) => {
+            console.log(data);
+        //   setMessageList((list) => [...list, data]);
+        });
+      }, [socket]);
 
     return(
         <div className='outerBox'>
