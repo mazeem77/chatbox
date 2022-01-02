@@ -8,7 +8,8 @@ const socket = io.connect("http://localhost:8080/")
 function App() {
   return(
     <div>
-      <Dock socket={socket}/>
+      <LoginPage />
+      {/* <Dock socket={socket}/> */}
     </div>
   );
 }

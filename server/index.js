@@ -5,18 +5,33 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const mysql = require('mysql');
 app.use(cors());
+app.use(express.json());
 
 
-var con = mysql.createConnection({
+var db = mysql.createConnection({
   host: "localhost",
-  user: "yourusername",
-  password: "yourpassword"
+  user: "root",
+  password: "554151955",
+  database: "chatbox"
 });
 
-// con.connect(function(err) {
-//   if (err) throw err;
-//   console.log("Connected!");
-// });
+db.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
+app.post('/signUpFunction', (req, res) => {
+  const fullName = req.body.fullName;
+  const loginEmail = req.body.loginEmail;
+  const loginPassword = req.body.loginPassword;
+
+  const [first_name, last_name] = fullName.split(' ');
+  console.log(last_name);
+
+  db.query(
+    "INSERT INTO user (user_id, username, date_CREATEd, status, about, phone_no, first_name, last_name, email, password) VALUES (?,?,?,?,?,?,?,?,?,?)",
+    [1, fullName, "9999-12-31", "active", "active", 0305555, first_name, last_name, loginEmail, loginPassword])
+})
 
 const server = http.createServer(app);
 
