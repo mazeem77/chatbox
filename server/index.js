@@ -4,7 +4,7 @@ const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
 const mysql = require('mysql');
-app.use(cors());
+app.use(require('cors')());
 app.use(express.json());
 
 
@@ -26,11 +26,24 @@ app.post('/signUpFunction', (req, res) => {
   const loginPassword = req.body.loginPassword;
 
   const [first_name, last_name] = fullName.split(' ');
-  console.log(last_name);
 
+  let username = "";
+  if (last_name !== undefined){
+    username = first_name[0].toLowerCase() + last_name.toLowerCase();
+  } 
+  else{
+    username = first_name.toLowerCase();
+  }
+  
   db.query(
-    "INSERT INTO user (user_id, username, date_CREATEd, status, about, phone_no, first_name, last_name, email, password) VALUES (?,?,?,?,?,?,?,?,?,?)",
-    [1, fullName, "9999-12-31", "active", "active", 0305555, first_name, last_name, loginEmail, loginPassword])
+    "INSERT INTO user (username, first_name, last_name, email, password) VALUES (?,?,?,?,?)",
+    [username, first_name, last_name, loginEmail, loginPassword]),
+    (err, result) => {
+      if(err)
+      console.log(err);
+      else
+      res.send("Signup Success!")
+    }
 })
 
 const server = http.createServer(app);

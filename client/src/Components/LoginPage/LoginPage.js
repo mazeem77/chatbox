@@ -1,10 +1,12 @@
 import { useState } from "react";
 import "./LoginPage.css"
+import {Route} from "react-router-dom";
 import Axios from "axios"
+import Dock from "../Dock/Dock";
 // import App from "../../App.js";
 
 
-function LoginPage(){
+function LoginPage({socket}){
   const [fullName, setFullName] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -14,8 +16,11 @@ function LoginPage(){
       fullName: fullName,
       loginEmail: loginEmail,
       loginPassword: loginPassword
+    }).then(() => {
+      console.log("Signup Success!!");
+      <Route path="../Dock/Dock" component={Dock} />
     })
-  }
+  };
 
   function signupClicked(){
     var signIn = document.getElementById("signIn");

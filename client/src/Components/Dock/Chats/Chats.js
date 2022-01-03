@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
+import ScrollToBottom from "react-scroll-to-bottom";
 import '../Chats/Chats.css';
 import Dock from '../Dock.js';
 
@@ -7,6 +8,7 @@ import Dock from '../Dock.js';
 function Chats({socket}){
 
     const [newMessage, setNewMessage] = useState("");
+    const [messageList, setMessageList] = useState([]);
 
     const sendMessage = async () => {
         if (newMessage !== "") {
@@ -19,15 +21,15 @@ function Chats({socket}){
     
         await socket.emit("send_message", mData);
 
-        //   setMessageList((list) => [...list, messageData]);
-        //   setNewMessage("");
+          setMessageList((list) => [...list, mData]);
+          setNewMessage("");
         }
       };
 
       useEffect(() => {
         socket.on("receive_message", (data) => {
             console.log(data);
-        //   setMessageList((list) => [...list, data]);
+          setMessageList((list) => [...list, data]);
         });
       }, [socket]);
 
@@ -50,6 +52,25 @@ function Chats({socket}){
                 </div>
             </div>
             <div className="centerColumn">
+            <div className="chat-body">
+                <ScrollToBottom className="message-container">
+                {messageList.map((messageContent) => {
+                    return (
+                    <div className="message" id={'Ali' === messageContent.author ? "you" : "other"}>
+                        <div>
+                            <div className="message-content">
+                                <p>{messageContent.message}</p>
+                            </div>
+                            <div className="message-meta">
+                                <p id="time">{messageContent.time}</p>
+                                <p id="author">{messageContent.author}</p>
+                            </div>
+                        </div>
+                    </div>
+                    );
+                })}
+                </ScrollToBottom>
+        	</div> 
                 <div className="messageBox">
                     <div className="messageText">
                         <input type="text" placeholder="Write Message..." value={newMessage} onChange={(event)=>{
