@@ -22,8 +22,9 @@ db.connect(function(err) {
 
 app.post('/signUpFunction', (req, res) => {
   const fullName = req.body.fullName;
-  const loginEmail = req.body.loginEmail;
-  const loginPassword = req.body.loginPassword;
+  const signUpEmail = req.body.signUpEmail;
+  const signUpPassword = req.body.signUpPassword;
+  console.log("Got a request at signupfunc")
 
   const [first_name, last_name] = fullName.split(' ');
 
@@ -37,14 +38,43 @@ app.post('/signUpFunction', (req, res) => {
   
   db.query(
     "INSERT INTO user (username, first_name, last_name, email, password) VALUES (?,?,?,?,?)",
-    [username, first_name, last_name, loginEmail, loginPassword]),
+    [username, first_name, last_name, signUpEmail, signUpPassword],
     (err, result) => {
-      if(err)
-      console.log(err);
-      else
-      res.send("Signup Success!")
+      console.log("We reached herer")
+      if(err){
+        res.send("Error for duplication");
+      }
+      else{
+        res.send({msg: "Signup Success!"});
+        console.log("Signup Success!");
+      }
+      console.log("Signup Success!");
+    })
+})
+
+// LoginFunction
+
+app.post('/logInFunction', (req, res) => {
+  const loginEmail = req.body.loginEmail;
+  const loginPassword = req.body.loginPassword;
+  
+  db.query(
+    "SELECT * FROM user WHERE email = ? AND password = ?",
+    [loginEmail, loginPassword]),
+    (err, result) => {
+      if(err){
+        res.send(err);
+      }
+      else{
+        res.send("Login Success!");
+      }
+      console.log("login Success!");
     }
 })
+
+// LoginFunctionend
+
+
 
 const server = http.createServer(app);
 
