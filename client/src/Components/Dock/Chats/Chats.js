@@ -1,11 +1,14 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import ScrollToBottom from "react-scroll-to-bottom";
+import { UserContext } from '../../../userContext';
 import '../Chats/Chats.css';
 import Dock from '../Dock.js';
 
 
 function Chats({socket}){
+
+    const {user, setUser} = useContext(UserContext);
 
     const [newMessage, setNewMessage] = useState("");
     const [messageList, setMessageList] = useState([]);
@@ -14,22 +17,22 @@ function Chats({socket}){
         if (newMessage !== "") {
           const mData = {
             room : '123',
-            author : 'Ali',
+            author : user,
             message : newMessage,
             time : new Date(Date.now()).getHours() + ":" + new Date(Date.now()).getMinutes()
         };
     
         await socket.emit("send_message", mData);
 
-          setMessageList((list) => [...list, mData]);
-          setNewMessage("");
+        //   setMessageList((list) => [...list, mData]);
+        //   setNewMessage("");
         }
       };
 
       useEffect(() => {
         socket.on("receive_message", (data) => {
             console.log(data);
-          setMessageList((list) => [...list, data]);
+        //   setMessageList((list) => [...list, data]);
         });
       }, [socket]);
 
@@ -56,7 +59,7 @@ function Chats({socket}){
                 <ScrollToBottom className="message-container">
                 {messageList.map((messageContent) => {
                     return (
-                    <div className="message" id={'Ali' === messageContent.author ? "you" : "other"}>
+                    <div className="message" id={user === messageContent.author ? "you" : "other"}>
                         <div>
                             <div className="message-content">
                                 <p>{messageContent.message}</p>

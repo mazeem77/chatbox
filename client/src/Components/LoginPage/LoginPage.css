@@ -127,6 +127,11 @@ h1{
     font-size: 16px;
 }
 
+#forgot{
+    color: #E84C3D;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
 .sideNote button{
     background-color: #E84C3D;
     border: 2px solid white;

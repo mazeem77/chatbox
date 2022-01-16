@@ -1,18 +1,23 @@
-import { useState } from "react";
+import { useState, useContext, useMemo } from "react";
 import "./LoginPage.css"
-import {Route} from "react-router-dom";
 import Axios from "axios"
 import Dock from "../Dock/Dock";
-// import App from "../../App.js";
+import { BrowserRouter as Router, Route, Link, useNavigate } from 'react-router-dom';
+import { UserContext } from "../../userContext";
 
 
 function LoginPage({socket}){
-  const [fullName, setFullName] = useState("");
-  const [signUpEmail, setsignUpEmail] = useState("");
-  const [signUpPassword, setsignUpPassword] = useState("");
 
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  const {user, setUser} = useContext(UserContext);
+
+  const [fullName, setFullName] = useState(null);
+  const [signUpEmail, setsignUpEmail] = useState(null);
+  const [signUpPassword, setsignUpPassword] = useState(null);
+
+  const [loginEmail, setLoginEmail] = useState(null);
+  const [loginPassword, setLoginPassword] = useState(null);
+
+  let navigate = useNavigate();
 
   const signUpFunction = ()=>{
     Axios.post("http://localhost:8080/signUpFunction", {
@@ -20,7 +25,26 @@ function LoginPage({socket}){
       signUpEmail: signUpEmail,
       signUpPassword: signUpPassword
     }).then((response) => {
-      console.log(response.data.msg);
+      if(response.data.result){
+        navigate("/dock");
+        console.log(user);
+      }
+      else if(!response.data.result){
+        if(response.data.code === "ER_DUP_ENTRY"){
+          console.log("Email Already Exists");
+        }
+        else if(response.data.code === "ER_BAD_NULL_ERROR"){
+          if(response.data.sqlMessage === "Column 'password' cannot be null"){
+            console.log("Password field cannot be Empty!");
+          }
+          else if(response.data.sqlMessage === "Column 'email' cannot be null"){
+            console.log("Email field cannot be Empty!");
+          }
+          else if(response.data.sqlMessage === "Column 'username' cannot be null"){
+            console.log("Full Name field cannot be Empty!");
+          }
+        }
+      }
     });
   };
 
@@ -29,7 +53,13 @@ function LoginPage({socket}){
       loginEmail: loginEmail,
       loginPassword: loginPassword
     }).then((response) => {
-      console.log(response);
+      if(response.data.length === 0){
+        console.log("Email does not Exists!");
+      }
+      if(response.data.length === 1){
+        setUser(response.data[0].username);
+        navigate("/dock");
+      }
     });
   };
 
@@ -82,13 +112,28 @@ function LoginPage({socket}){
             <form id="signup">
                 <h1 id="colorLess">Register to Chat!</h1>
                 <input type="text" name="fullName" id="name" placeholder="Full Name" onChange={(event)=>{
-                  setFullName(event.target.value);
+                  if(event.target.value !== ""){
+                    setFullName(event.target.value);
+                  }
+                  else{
+                    setFullName(null);
+                  }
                 }}/>
-                <input type="email" name="signUpEmail" id="lemail" placeholder="Email" onChange={(event)=>{
-                  setsignUpEmail(event.target.value);
+                <input type="email" name="signUpEmail" id="semail" placeholder="Email" onChange={(event)=>{
+                  if(event.target.value !== ""){
+                    setsignUpEmail(event.target.value);
+                  }
+                  else{
+                    setsignUpEmail(null);
+                  }
                 }}/><br />
-                <input type="password" name="signUpPassword" id="lpass" placeholder="Password" onChange={(event)=>{
-                  setsignUpPassword(event.target.value);
+                <input type="password" name="signUpPassword" id="spass" placeholder="Password" onChange={(event)=>{
+                  if(event.target.value !== ""){
+                    setsignUpPassword(event.target.value);
+                  }
+                  else{
+                    setsignUpPassword(null);
+                  }
                 }}/><br />
                 <button type="button" onClick={signUpFunction}>SIGN UP</button>
             </form>

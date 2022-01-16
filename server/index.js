@@ -24,31 +24,29 @@ app.post('/signUpFunction', (req, res) => {
   const fullName = req.body.fullName;
   const signUpEmail = req.body.signUpEmail;
   const signUpPassword = req.body.signUpPassword;
-  console.log("Got a request at signupfunc")
-
-  const [first_name, last_name] = fullName.split(' ');
-
-  let username = "";
-  if (last_name !== undefined){
-    username = first_name[0].toLowerCase() + last_name.toLowerCase();
-  } 
-  else{
-    username = first_name.toLowerCase();
+  let first_name = null;
+  let last_name = null;
+  let username = null;
+  if(fullName !== null){
+    [first_name, last_name] = fullName.split(' ');
+    if (last_name !== undefined){
+      username = first_name[0].toLowerCase() + last_name.toLowerCase();
+    } 
+    else{
+      username = first_name.toLowerCase();
+    }
   }
-  
+    
   db.query(
     "INSERT INTO user (username, first_name, last_name, email, password) VALUES (?,?,?,?,?)",
     [username, first_name, last_name, signUpEmail, signUpPassword],
     (err, result) => {
-      console.log("We reached herer")
       if(err){
-        res.send("Error for duplication");
+        res.send(err);
       }
       else{
-        res.send({msg: "Signup Success!"});
-        console.log("Signup Success!");
+        res.send({result});
       }
-      console.log("Signup Success!");
     })
 })
 
@@ -57,19 +55,17 @@ app.post('/signUpFunction', (req, res) => {
 app.post('/logInFunction', (req, res) => {
   const loginEmail = req.body.loginEmail;
   const loginPassword = req.body.loginPassword;
-  
   db.query(
     "SELECT * FROM user WHERE email = ? AND password = ?",
-    [loginEmail, loginPassword]),
+    [loginEmail, loginPassword],
     (err, result) => {
       if(err){
         res.send(err);
       }
       else{
-        res.send("Login Success!");
+        res.send(result);
       }
-      console.log("login Success!");
-    }
+    })
 })
 
 // LoginFunctionend
@@ -94,12 +90,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send_message", (data) => {
-    socket.to(data.room).emit("receive_message", data);
-    console.log(data)
+    socket.join('123');
+    socket.to('123').emit("receive_message", data);
   });
 
   socket.on("disconnect", () => {
-    console.log("User Disconnected", socket.id);
+    console.log("User Disconnected:", socket.id);
   });
 });
 
