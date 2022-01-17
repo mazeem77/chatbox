@@ -4,7 +4,10 @@ import DashBoard from "./DashBoard/DashBoard";
 import Chats from "./Chats/Chats.js"
 import Notifications from "./Notifications/Notification";
 import Settings from "./Settings/Settings";
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+import Axios from "axios"
+import { UserContext } from "../../userContext";
+
 
 function Dock({socket}){
 
@@ -13,9 +16,43 @@ function Dock({socket}){
     const [notificationisOpen, setNotificationsopen] = useState(false);
     const [settingisOpen, setSettingsopen] = useState(false);
 
+    // setting variable for userInfo
+    const [user_id, setUser_id] = useState(false);
+    const [username, setUsername] = useState(false);
+    const [first_name, setFirst_name] = useState(false);
+    const [last_name, setLast_name] = useState(false);
+    const [email, setEmail] = useState(false);
+    const [status, setStatus] = useState(false);
+    const [about, setAbout] = useState(false);
+    const [phone_no, setPhone_no] = useState(false);
+
+    const {user, setUser}  = useContext(UserContext);
+
+
+    const userInfo = ()=>{
+        Axios.post("http://localhost:8080/userInfo", {
+            user: user
+        }).then((response) => {
+          if(response.data.length === 0){
+            console.log("Does not Exists!");
+          }
+          if(response.data.length === 1){
+            setUser_id(response.data[0].user_id);
+            setUsername(response.data[0].username);
+            setFirst_name(response.data[0].first_name);
+            setLast_name(response.data[0].last_name);
+            setEmail(response.data[0].email);
+            setStatus(response.data[0].status);
+            setAbout(response.data[0].about);
+            setPhone_no(response.data[0].phone_no);
+          }
+        });
+      };
+
     // For DashBoard Handling
     function openDashBoard(){
         setDashBoardopen(true);
+        userInfo();
     }
 
     function closeDashBoard(){
@@ -25,6 +62,7 @@ function Dock({socket}){
     //For Chat Handling
     function openChats(){
         setChatopen(true);
+        userInfo();
     }
 
     function closeChats(){
@@ -34,6 +72,7 @@ function Dock({socket}){
     //For Notifications Handling
     function openNotifications(){
         setNotificationsopen(true);
+        userInfo();
     }
 
     function closeNotifications(){
@@ -43,6 +82,7 @@ function Dock({socket}){
     //For Settings Handling
     function openSettings(){
         setSettingsopen(true);
+        userInfo();
     }
 
     function closeSettings(){
@@ -136,8 +176,8 @@ function Dock({socket}){
         </div>
         
         <div>
-            {chatisOpen && <Chats socket={socket}/>}
-            {dashBoardisOpen && <DashBoard />}
+            {chatisOpen && <Chats socket={socket} user_id={user_id} username={username}/>}
+            {dashBoardisOpen && <DashBoard first_name={first_name} last_name={last_name} about={about} phone_no={phone_no} email={email} user_id={user_id} username={username} />}
             {notificationisOpen && <Notifications />}
             {settingisOpen && <Settings />}
         </div> 

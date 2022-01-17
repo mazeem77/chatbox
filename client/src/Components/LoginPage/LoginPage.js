@@ -8,7 +8,9 @@ import { UserContext } from "../../userContext";
 
 function LoginPage({socket}){
 
-  const {user, setUser} = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const {user, setUser}  = useContext(UserContext);
 
   const [fullName, setFullName] = useState(null);
   const [signUpEmail, setsignUpEmail] = useState(null);
@@ -17,8 +19,6 @@ function LoginPage({socket}){
   const [loginEmail, setLoginEmail] = useState(null);
   const [loginPassword, setLoginPassword] = useState(null);
 
-  let navigate = useNavigate();
-
   const signUpFunction = ()=>{
     Axios.post("http://localhost:8080/signUpFunction", {
       fullName: fullName,
@@ -26,8 +26,8 @@ function LoginPage({socket}){
       signUpPassword: signUpPassword
     }).then((response) => {
       if(response.data.result){
-        navigate("/dock");
-        console.log(user);
+        console.log(response.data);
+        navigate("/");
       }
       else if(!response.data.result){
         if(response.data.code === "ER_DUP_ENTRY"){
@@ -57,7 +57,7 @@ function LoginPage({socket}){
         console.log("Email does not Exists!");
       }
       if(response.data.length === 1){
-        setUser(response.data[0].username);
+        setUser(response.data[0].user_id);
         navigate("/dock");
       }
     });
